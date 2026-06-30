@@ -1,37 +1,37 @@
 # lumen-dbg
 
-A graphical diagnostic probe for the [lumen](https://github.com/AspisOS/lumen)
-compositor on [AspisOS](https://github.com/AspisOS/AspisOS) — a capability-based,
+A graphical diagnostic probe for the [lumen](https://github.com/LoricaOS/lumen)
+compositor on [LoricaOS](https://github.com/LoricaOS/LoricaOS) — a capability-based,
 no-ambient-authority x86-64 operating system built on the from-scratch
-[Aegis](https://github.com/AspisOS/Aegis) kernel.
+[Aegis](https://github.com/LoricaOS/Aegis) kernel.
 
 lumen-dbg ships the `lumen-probe` diagnostic: a standalone binary (installed at
 `/bin/lumen-probe`) that waits for the compositor to come up, performs a
 `lumen_connect()` handshake, opens a probe window, and reports the result to the
 console. It exercises the lumen client path end-to-end and backs the compositor's
 connection and proxy-teardown regression tests. It is distributed as a
-[herald](https://github.com/AspisOS/AspisOS) system package.
+[herald](https://github.com/LoricaOS/LoricaOS) system package.
 
 ## Status
 
 lumen-dbg is an early-stage, intentionally minimal diagnostic. Today it is a
 single test probe that runs only on test/diagnostic boots and underpins two
 regression tests; it is not a user-facing tool and never appears on a production
-desktop. It is expected to grow as AspisOS's graphical test and diagnostic needs
+desktop. It is expected to grow as LoricaOS's graphical test and diagnostic needs
 expand — additional probes, more of the window protocol exercised, richer
 reporting — so treat the current single-binary shape as a starting point rather
 than a finished surface.
 
-## Where it fits in AspisOS
+## Where it fits in LoricaOS
 
-AspisOS is decomposed into independent repositories:
+LoricaOS is decomposed into independent repositories:
 
 | Repo | Role |
 |------|------|
-| `AspisOS/Aegis` | The kernel: `AF_UNIX` sockets, the framebuffer, the capability model, the syscalls the compositor and its clients run on. |
-| `AspisOS/lumen` | The compositor/display server. Owns the screen; clients connect to `/run/lumen.sock` for a window. |
-| `AspisOS/glyph` | The GUI toolkit. Provides the client side of lumen's window protocol (`lumen_client.h`, `lumen_proto.h`) the probe links against. |
-| `AspisOS/lumen-dbg` | **This repo.** A minimal lumen client used to validate the compositor connection and window lifecycle. |
+| `LoricaOS/Aegis` | The kernel: `AF_UNIX` sockets, the framebuffer, the capability model, the syscalls the compositor and its clients run on. |
+| `LoricaOS/lumen` | The compositor/display server. Owns the screen; clients connect to `/run/lumen.sock` for a window. |
+| `LoricaOS/glyph` | The GUI toolkit. Provides the client side of lumen's window protocol (`lumen_client.h`, `lumen_proto.h`) the probe links against. |
+| `LoricaOS/lumen-dbg` | **This repo.** A minimal lumen client used to validate the compositor connection and window lifecycle. |
 
 The probe is just another lumen client. It holds no display authority of its own;
 it connects to lumen over `AF_UNIX` and asks for a window like any GUI app.
@@ -45,7 +45,7 @@ use:
   `bastion_autologin` test hook is present (i.e. on `aegis-installer-test.iso`).
   On a production graphical boot it returns immediately, so users never see a
   probe window.
-- **Wait for the compositor.** It sleeps briefly so [bastion](https://github.com/AspisOS/bastion)
+- **Wait for the compositor.** It sleeps briefly so [bastion](https://github.com/LoricaOS/bastion)
   can authenticate and bring lumen up, then retries `lumen_connect()` up to 300
   times at 100 ms intervals (~30 s). Aegis `AF_UNIX` binds live in an in-kernel
   name table with no filesystem entry, so there is nothing to `stat()` for
@@ -76,7 +76,7 @@ first-party and signature-trusted, installed verbatim by herald.
 ## Building
 
 lumen-dbg builds with a musl cross-compiler against a pinned
-[glyph](https://github.com/AspisOS/glyph) toolkit artifact, then packs a signed
+[glyph](https://github.com/LoricaOS/glyph) toolkit artifact, then packs a signed
 herald package.
 
 ```sh
@@ -128,4 +128,4 @@ GLYPH_VERSION     the pinned glyph toolkit version it builds against
 ## Dependencies
 
 `depends=lumen` — the probe is a lumen client and connects to the compositor, so
-installing it pulls [lumen](https://github.com/AspisOS/lumen).
+installing it pulls [lumen](https://github.com/LoricaOS/lumen).
